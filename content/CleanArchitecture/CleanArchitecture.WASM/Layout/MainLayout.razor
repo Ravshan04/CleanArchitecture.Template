@@ -1,0 +1,36 @@
+﻿@using Blazored.LocalStorage
+@inherits LayoutComponentBase
+@inject ILocalStorageService LocalStorage
+<div class="page">
+    <div class="sidebar">
+        <NavMenu/>
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            @if (!string.IsNullOrWhiteSpace(UserName))
+            {
+                <p>@UserName</p>
+            }
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code
+{
+    public string? UserName { get; set; }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            UserName = await LocalStorage.GetItemAsync<string?>("userName");
+            await InvokeAsync(StateHasChanged);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

@@ -1,0 +1,19 @@
+@page "/Login"
+<h3>Login</h3>
+
+@if (!string.IsNullOrEmpty(Error))
+{
+    <div style="color:red">@Error</div>
+}
+
+<div style="max-width: 320px">
+    <input @bind="Username" placeholder="Username" />
+    <br /><br />
+    <input type="password" @bind="Password" placeholder="Password" />
+    <br /><br />
+    <button @onclick="LoginAsync">Sign in</button>
+</div>
+
+@code {
+    
+}
