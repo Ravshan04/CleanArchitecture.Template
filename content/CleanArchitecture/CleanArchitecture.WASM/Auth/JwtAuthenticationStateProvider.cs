@@ -1,0 +1,67 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
+
+namespace CleanArchitecture.WASM.Auth;
+
+
+public class JwtAuthenticationStateProvider : AuthenticationStateProvider
+{
+    private readonly ILocalStorageService _localStorage;
+    private readonly ClaimsPrincipal _anonymous =
+        new ClaimsPrincipal(new ClaimsIdentity());
+
+    public JwtAuthenticationStateProvider(ILocalStorageService localStorage)
+    {
+        _localStorage = localStorage;
+    }
+
+    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+    {
+        var token = await _localStorage.GetItemAsync<string>("access_token");
+
+        if (string.IsNullOrWhiteSpace(token))
+            return new AuthenticationState(_anonymous);
+
+        var handler = new JwtSecurityTokenHandler();
+
+        JwtSecurityToken jwt;
+
+        try
+        {
+            jwt = handler.ReadJwtToken(token);
+        }
+        catch
+        {
+            await _localStorage.RemoveItemAsync("access_token");
+            return new AuthenticationState(_anonymous);
+        }
+
+        if (jwt.ValidTo < DateTime.UtcNow)
+        {
+            await _localStorage.RemoveItemAsync("access_token");
+            return new AuthenticationState(_anonymous);
+        }
+
+        var identity = new ClaimsIdentity(jwt.Claims, "jwt");
+        var user = new ClaimsPrincipal(identity);
+
+        return new AuthenticationState(user);
+    }
+
+    public async Task MarkUserAsAuthenticated(LoginResponse response)
+    {
+        await _localStorage.SetItemAsync("access_token", response.Token);
+        await _localStorage.SetItemAsync("userName", response.UserName);
+        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+    }
+
+    public async Task MarkUserAsLoggedOut()
+    {
+        await _localStorage.RemoveItemAsync("access_token");
+        await _localStorage.RemoveItemAsync("userName");
+        NotifyAuthenticationStateChanged(
+            Task.FromResult(new AuthenticationState(_anonymous)));
+    }
+}
