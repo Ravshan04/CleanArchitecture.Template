@@ -7,41 +7,25 @@ on:
 
 jobs:
   build-and-test:
-    name: Unit Tests (no Playwright)
+    name: Unit Tests
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
         with:
-          dotnet-version: 10.0.x
-      - run: dotnet restore
-      - run: dotnet build --no-restore
-      - run: dotnet test --no-build --filter "TestCategory!=Playwright"
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
 
-# name: CI
+      - name: Restore
+        run: dotnet restore
 
-# on:
-#   pull_request:
-#     branches:
-#       - develop
-
-# jobs:
-#   build-and-test:
-#     name: Unit Tests
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - uses: actions/checkout@v4
-
-#       - uses: actions/setup-dotnet@v4
-#         with:
-#           dotnet-version: 10.0.x
-
-#       - name: Restore
-#         run: dotnet restore
-
-#       - name: Run unit tests (build + test)
-#         run: dotnet test --filter "TestCategory!=Playwright"
+      - name: Run unit tests (build + test)
+        run: dotnet test --filter "TestCategory!=Playwright"
 
   # playwright-tests:
   #   name: Playwright Tests
