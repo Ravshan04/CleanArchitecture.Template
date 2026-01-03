@@ -96,5 +96,5 @@ catch (Exception ex)
 }
 finally
 {
-    NLog.LogManager.Shutdown()
+    NLog.LogManager.Shutdown();
 }
