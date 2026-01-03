@@ -21,8 +21,23 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-
 
-      - name: Restore
-        run: dotnet restore
+      - name: Restore test projects
+        shell: pwsh
+        run: |
+          $projects = Get-ChildItem -Path content/CleanArchitecture -Recurse -Filter "*.Tests.csproj"
+          foreach ($proj in $projects) {
+              Write-Host "Restoring $($proj.FullName)"
+              dotnet restore $proj.FullName
+          }
+        
+      - name: Build test projects only
+        shell: pwsh
+        run: |
+            $projects = Get-ChildItem -Path content/CleanArchitecture -Recurse -Filter "*.Tests.csproj"
+            foreach ($proj in $projects) {
+               Write-Host "Building test project $($proj.FullName)"
+                dotnet build $proj.FullName --no-restore
+            }
 
       - name: Build all projects
         run: dotnet build --no-restore
