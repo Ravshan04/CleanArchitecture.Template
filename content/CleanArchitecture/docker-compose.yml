@@ -9,17 +9,17 @@ services:
   kafka:
     image: confluentinc/cp-kafka:7.6.0
 
-  cleanarchitecture:
+  postgres:
     image: postgres:17-alpine
 
-  cleanarchitecture.api:
-    image: ${DOCKER_REGISTRY-}cleanarchitectureapi
+  cleanarchitecture-api:
+    image: ${DOCKER_REGISTRY-}cleanarchitecture-api:latest
     build:
       context: .
       dockerfile: CleanArchitecture.API/Dockerfile
 
-  cleanarchitecture.jobs:
-    image: ${DOCKER_REGISTRY-}cleanarchitecturejobs
+  cleanarchitecture-jobs:
+    image: ${DOCKER_REGISTRY-}cleanarchitecture-jobs:latest
     build:
       context: .
       dockerfile: CleanArchitecture.Jobs/Dockerfile
@@ -29,5 +29,3 @@ volumes:
   redis_data: {}
   zookeeper_data: {}
   kafka_data: {}
-
-
