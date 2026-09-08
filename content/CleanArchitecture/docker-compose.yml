@@ -1,5 +1,14 @@
 services:
 
+  redis:
+    image: redis:7-alpine
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+
   postgres:
     image: postgres:17-alpine
 
@@ -17,3 +26,6 @@ services:
 
 volumes:
   postgres_data: {}
+  redis_data: {}
+  zookeeper_data: {}
+  kafka_data: {}
