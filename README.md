@@ -48,4 +48,10 @@ and create a project:
 dotnet new cleanarchitecture -n MyApp
 ```
 
+---
+
+## 🛠 Infrastructure (Redis & Kafka) Setup
+
+Detailed documentation for starting and testing Redis and Kafka services using Docker Compose is available in [REDIS_KAFKA_SETUP.md](content/CleanArchitecture/docs/REDIS_KAFKA_SETUP.md).
+
 Telegram channel for project communications: https://t.me/CleanArchitecture_Template
